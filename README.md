@@ -1,18 +1,18 @@
-## k8s helm charts for the hollow sandbox.
+## k8s helm charts for the metal-automata sandbox.
 
-This chart deploys the various metal-toolbox/hollow services in docker KIND for development and testing.
+This chart deploys the various metal-automata services in docker KIND for development and testing.
 
- - [FleetDB](https://github.com/metal-toolbox/fleetdb) with the CrDB backend.
- - [Conditionorc](https://github.com/metal-toolbox/conditionorc)
- - [Alloy](https://github.com/metal-toolbox/alloy)
- - [Flasher](https://github.com/metal-toolbox/flasher/)
- - [Flipflop](https://github.com/metal-toolbox/flipflop)
+ - [FleetDB](https://github.com/metal-automata/fleetdb) with the CrDB backend.
+ - [Conditionorc](https://github.com/metal-automata/conditionorc)
+ - [Alloy](https://github.com/metal-automata/alloy)
+ - [Flasher](https://github.com/metal-automata/flasher/)
+ - [Flipflop](https://github.com/metal-automata/flipflop)
  - NATS Jetstream and K/V
  - Chaos mesh
 
-The [mctl](https://github.com/metal-toolbox/mctl/) utility can be used to interact with the various services running in the sandbox.
+The [mctl](https://github.com/metal-automata/mctl/) utility can be used to interact with the various services running in the sandbox.
 
-To understand more about the firmware install and how these services interact, check out the [firmware install architecture](https://github.com/metal-toolbox/architecture/blob/main/firmware-install-service.md) doc.
+To understand more about the firmware install and how these services interact, check out the [firmware install architecture](https://github.com/metal-automata/architecture/blob/main/firmware-install-service.md) doc.
 
 ### Prerequisites
 
@@ -21,18 +21,18 @@ To understand more about the firmware install and how these services interact, c
 - Setup a local KIND cluster with a registry using the script here: `./kind-with-registry.sh` (from https://kind.sigs.k8s.io/docs/user/local-registry/)
 - Export `KUBECONFIG=~/.kube/config_kind`
 - Docker images for FleetDB, Conditionorc, Alloy
-- Install [mctl](https://github.com/metal-toolbox/mctl#getting-started) and use the configuration from [here](https://github.com/metal-toolbox/sandbox/tree/main/scripts/mctl)
+- Install [mctl](https://github.com/metal-automata/mctl#getting-started) and use the configuration from [here](https://github.com/metal-automata/sandbox/tree/main/scripts/mctl)
 - Install [yq](https://github.com/mikefarah/yq/). (MacOS: `brew install yq`; Linux: `snap install yq`)
 
 ### 1. Build docker images and push to local registry
 
 Clone each of the repositories and run `make push-image-devel`
 
- - [FleetDB](https://github.com/metal-toolbox/fleetdb)
- - [Conditionorc](https://github.com/metal-toolbox/conditionorc)
- - [Alloy](https://github.com/metal-toolbox/alloy/)
- - [Flasher](https://github.com/metal-toolbox/flasher/)
- - [Flipflop](https://github.com/metal-toolbox/flipflop)
+ - [FleetDB](https://github.com/metal-automata/fleetdb)
+ - [Conditionorc](https://github.com/metal-automata/conditionorc)
+ - [Alloy](https://github.com/metal-automata/alloy/)
+ - [Flasher](https://github.com/metal-automata/flasher/)
+ - [Flipflop](https://github.com/metal-automata/flipflop)
 
 This will build and push the container images to the local container registry.
 
@@ -53,7 +53,7 @@ make install
 
 ### 3. Import a server
 
-To run set [conditions](https://github.com/metal-toolbox/architecture/blob/main/firmware-install-service.md#conditions) on a server, they need to be enlisted in the sandbox `Serverservice`.
+To run set [conditions](https://github.com/metal-automata/architecture/blob/main/firmware-install-service.md#conditions) on a server, they need to be enlisted in the sandbox `Serverservice`.
 
 Note: this assumes the KIND environment on your machine can connect to server BMC IPs.
 

@@ -1,10 +1,10 @@
 # Fleet Scheduler
 
-[Fleet Scheduler](https://github.com/metal-toolbox/fleet-scheduler) is an optional part of the sandbox. It uses k8s cron jobs to complete tasks for the sandbox.
+[Fleet Scheduler](https://github.com/metal-automata/fleet-scheduler) is an optional part of the sandbox. It uses k8s cron jobs to complete tasks for the sandbox.
 
-For deployment to the sandbox, fleetscheduler.enable in [value.yaml](https://github.com/metal-toolbox/sandbox/blob/main/values.yaml) must be set to true, and the docker image must be pushed with `make push-image-devel`
+For deployment to the sandbox, fleetscheduler.enable in [value.yaml](https://github.com/metal-automata/sandbox/blob/main/values.yaml) must be set to true, and the docker image must be pushed with `make push-image-devel`
 
-You just need to add the job to the [value.yaml](https://github.com/metal-toolbox/sandbox/blob/main/values.yaml) file.
+You just need to add the job to the [value.yaml](https://github.com/metal-automata/sandbox/blob/main/values.yaml) file.
 
 ## Values for creating new jobs
 

@@ -5,7 +5,7 @@ image: &image_anchor
     pullPolicy: Always
     repository:
       tag: latest
-      url: ghcr.io/metal-toolbox
+      url: ghcr.io/metal-automata
 
 env: &env_anchor
   env:
@@ -121,7 +121,7 @@ syncer:
       url: http://modeldata/modeldata.json
 
 fleet-scheduler:
-  enable: false # when enabled, metal-toolbox/fleet-scheduler will need to be deployed with `make push-image-devel`
+  enable: false # when enabled, metal-automata/fleet-scheduler will need to be deployed with `make push-image-devel`
   <<: *image_anchor
   <<: *env_anchor
     # uncomment once oauth service is availble in sandbox

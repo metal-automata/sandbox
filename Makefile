@@ -150,7 +150,7 @@ kubectl-ctx-kind:
 	@./scripts/makefile/set-service-to-local.sh $(subst -local,,$@) ${DIR}
 
 ## Change service to upstream service instead of local.
-## Example: `make fleet-scheduler-upstream` will tell sandbox to use the upstream (https://metal-toolbox.github.io/fleet-scheduler) fleet-scheduler.
+## Example: `make fleet-scheduler-upstream` will tell sandbox to use the upstream (https://metal-automata.github.io/fleet-scheduler) fleet-scheduler.
 %-upstream:
 	@touch .local-values.yaml
 	@yq -i "del(.localrepos.[] | select(.name == \"$(subst -upstream,,$@)\"))" .local-values.yaml
