@@ -5,8 +5,7 @@ CONDITION_API_PORT_FW=9001:9001
 CONDITION_ORC_API_PORT_FW=9002:9001
 ALLOY_PORT_FW=9091:9091
 FLEETDB_PORT_FW=8000:8000
-CRDB_UI_PORT_FW=8081:8080
-CRDB_PORT_FW=26257:26257
+PG_PORT_FW=5432:5432
 CHAOS_DASH_PORT_FW=2333:2333
 JAEGER_DASH_PORT_FW=16686:16686
 OTEL_PORT_FW=4317:4317
@@ -54,9 +53,9 @@ port-forward-alloy-pprof: kubectl-ctx-kind
 port-forward-fleetdb: kubectl-ctx-kind
 	kubectl port-forward deployment/fleetdb ${FLEETDB_PORT_FW}
 
-## port forward crdb service port (runs in foreground)
-port-forward-crdb: kubectl-ctx-kind
-	kubectl port-forward deployment/fleetdb-crdb ${CRDB_PORT_FW}
+## port forward pg service port (runs in foreground)
+port-forward-pg: kubectl-ctx-kind
+	kubectl port-forward service/postgresql ${PG_PORT_FW}
 
 ## port forward chaos-mesh dashboard (runs in foreground)
 port-forward-chaos-dash: kubectl-ctx-kind
@@ -74,16 +73,13 @@ port-forward-otel:
 port-forward-minio:
 	kubectl port-forward deployment/minio ${MINIO_PORT_FW}
 
-port-forward-crdb-ui:
-	kubectl port-forward deployment/fleetdb-crdb --address 0.0.0.0  ${CRDB_UI_PORT_FW}
 
 ## port forward all endpoints (runs in the background)
 port-all-with-lan:
 	kubectl port-forward deployment/conditions-api --address 0.0.0.0 ${CONDITION_API_PORT_FW} > /dev/null 2>&1 &
 	kubectl port-forward deployment/alloy --address 0.0.0.0 ${ALLOY_PORT_FW} > /dev/null 2>&1 &
-	kubectl port-forward deployment/crdb --address 0.0.0.0 ${CRDB_PORT_FW} > /dev/null 2>&1 &
+	kubectl port-forward service/postgresql --address 0.0.0.0 ${PG_PORT_FW} > /dev/null 2>&1 &
 	kubectl port-forward deployment/fleetdb --address 0.0.0.0 ${FLEETDB_PORT_FW} > /dev/null 2>&1 &
-	kubectl port-forward deployment/fleetdb-crdb --address 0.0.0.0 ${CRDB_PORT_FW} > /dev/null 2>&1 &
 	kubectl port-forward service/chaos-dashboard --address 0.0.0.0 ${CHAOS_DASH_PORT_FW} > /dev/null 2>&1 &
 	kubectl port-forward service/jaeger --address 0.0.0.0 ${JAEGER_DASH_PORT_FW} > /dev/null 2>&1 &
 	kubectl port-forward deployment/minio --address 0.0.0.0 ${MINIO_PORT_FW} > /dev/null 2>&1
@@ -91,7 +87,7 @@ port-all-with-lan:
 port-all:
 	kubectl port-forward deployment/conditions-api ${CONDITION_API_PORT_FW} > /dev/null 2>&1 &
 	kubectl port-forward deployment/alloy ${ALLOY_PORT_FW} > /dev/null 2>&1 &
-	kubectl port-forward deployment/crdb ${CRDB_PORT_FW} > /dev/null 2>&1 &
+	kubectl port-forward service/postgresql ${PG_PORT_FW} > /dev/null 2>&1 &
 	kubectl port-forward deployment/fleetdb ${FLEETDB_PORT_FW} > /dev/null 2>&1 &
 	kubectl port-forward service/chaos-dashboard ${CHAOS_DASH_PORT_FW} > /dev/null 2>&1 &
 	kubectl port-forward service/jaeger ${JAEGER_DASH_PORT_FW} > /dev/null 2>&1 &
@@ -102,7 +98,7 @@ kill-all-ports:
 	lsof -i:${CONDITION_API_PORT_FW} -t | xargs kill
 	lsof -i:${ALLOY_PORT_FW} -t | xargs kill
 	lsof -i:${FLEETDB_PORT_FW} -t | xargs kill
-	lsof -i:${CRDB_PORT_FW} -t | xargs kill
+	lsof -i:${PG_PORT_FW} -t | xargs kill
 	lsof -i:${CHAOS_DASH_PORT_FW} -t | xargs kill
 	lsof -i:${JAEGER_DASH_PORT_FW} -t | xargs kill
 	lsof -i:${MINIO_PORT_FW} -t | xargs kill
@@ -125,9 +121,9 @@ firmware-syncer-job:
 firmware-syncer-job-clean:
 	helm template syncer . --set syncer.enable_job=true | kubectl delete -f - -l app=syncer-job
 
-## connect to crdb with psql (requires port-forward-crdb)
-psql-crdb: kubectl-ctx-kind
-	psql -d "postgresql://root@localhost:26257/defaultdb?sslmode=disable"
+## connect to postgres with psql (requires port-forward-pg)
+psql: kubectl-ctx-kind
+	psql -d "postgresql://user:hunter2@localhost:5432/fleetdb?sslmode=disable"
 
 ## bootstrap just the nats setup - after an updated configurtion
 bootstrap-nats: clean-nats
