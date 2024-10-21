@@ -20,5 +20,8 @@ dependencies:
 - name: bioscfg
   repository: https://metal-toolbox.github.io/bioscfg
   version: v0.0.2
-digest: sha256:d2ea3b23b5854ce23dad429905eb3903a47cd345c769d3a076af830ba7d89bc1
-generated: "2024-09-30T14:45:17.810741996-04:00"
+- name: postgresql
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 16.0.3
+digest: sha256:fd0e930e40d8ede292191ec5dee4bc1a3fd063000ea752a750e63838243d2c0a
+generated: "2024-10-18T22:19:25.772742885+02:00"

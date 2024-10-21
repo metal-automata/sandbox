@@ -136,7 +136,7 @@ fleet-scheduler:
     #       client_scopes: "read:condition create:condition"
 
 flipflop:
-  enable: true
+  enable: false
   <<: *env_anchor
   <<: *image_anchor
   image:
@@ -146,7 +146,7 @@ flipflop:
       url: localhost:5001
 
 bioscfg:
-  enable: true
+  enable: false
   <<: *env_anchor
   <<: *image_anchor
   image:
@@ -177,8 +177,20 @@ minio:
       accessKey: accessKey
       secretKey: secretKey
 
-crdb:
-  image: cockroachdb/cockroach:latest-v21.1
+postgresql:
+  fullnameOverride: postgresql
+  image:
+    pullPolicy: IfNotPresent
+  auth:
+    username: user
+    password: hunter2
+    database: fleetdb
+  primary:
+    service:
+      type: NodePort
+    persistence:
+      volumeName: db
+      size: 250Mi
 
 chaos-mesh:
   enabled: false

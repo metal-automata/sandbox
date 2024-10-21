@@ -20,7 +20,7 @@ spec:
             - up
           env:
             - name: FLEETDB_CRDB_URI
-              value: postgresql://root@fleetdb-crdb:26257/defaultdb?sslmode=disable
+              value: postgresql://user:hunter2@postgresql:5432/fleetdb?sslmode=disable
           image: {{ .Values.fleetdb.image.repository.url }}/fleetdb:{{ .Values.fleetdb.image.repository.tag }}
           imagePullPolicy: {{ $.Values.fleetdb.image.pullPolicy }}
           name: fleetdb-migrate
@@ -34,7 +34,7 @@ spec:
       containers:
         - env:
             - name: FLEETDB_CRDB_URI
-              value: postgresql://root@fleetdb-crdb:26257/defaultdb?sslmode=disable
+              value: postgresql://user:hunter2@postgresql:5432/fleetdb?sslmode=disable
           image: {{ .Values.fleetdb.image.repository.url }}/fleetdb:{{ .Values.fleetdb.image.repository.tag }}
           imagePullPolicy: {{ $.Values.fleetdb.image.pullPolicy }}
           name: fleetdb
