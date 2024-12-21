@@ -182,9 +182,12 @@ postgresql:
   image:
     pullPolicy: IfNotPresent
   auth:
+    postgresPassword: postgres
     username: user
     password: hunter2
     database: fleetdb
+  passwordUpdateJob:
+    enabled: true
   primary:
     service:
       type: NodePort
