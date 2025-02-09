@@ -4,9 +4,7 @@ This chart deploys the various metal-automata services in docker KIND for develo
 
  - [FleetDB](https://github.com/metal-automata/fleetdb) with the CrDB backend.
  - [Conditionorc](https://github.com/metal-automata/conditionorc)
- - [Alloy](https://github.com/metal-automata/alloy)
- - [Flasher](https://github.com/metal-automata/flasher/)
- - [Flipflop](https://github.com/metal-automata/flipflop)
+ - [Agent](https://github.com/metal-automata/agent)
  - NATS Jetstream and K/V
  - Chaos mesh
 
@@ -30,17 +28,13 @@ Clone each of the repositories and run `make push-image-devel`
 
  - [FleetDB](https://github.com/metal-automata/fleetdb)
  - [Conditionorc](https://github.com/metal-automata/conditionorc)
- - [Alloy](https://github.com/metal-automata/alloy/)
- - [Flasher](https://github.com/metal-automata/flasher/)
- - [Flipflop](https://github.com/metal-automata/flipflop)
+ - [Agent](https://github.com/metal-automata/agent/)
 
 This will build and push the container images to the local container registry.
 
-To point to local services/repositories, check out [this](notes/services.md).
-
-If you checkouted the sandbox beside the other projects, go into the sandbox directory and run:
+If you fetched the sandbox beside the other projects, go into the sandbox directory and run:
 ```
-for i in fleetdb flasher alloy conditionorc flipflop ; do (cd ../${i}/ && make push-image-devel) ; done
+for i in fleetdb agent conditionorc; do (cd ../${i}/ && make push-image-devel) ; done
 ```
 
 ### 2. Deploy helm chart
@@ -51,13 +45,22 @@ Deploys the helm chart and bootstrap the NATS Jetstream, K/V store.
 make install
 ```
 
-### 3. Import a server
+### 3. Create hardware vendor and models
+
+This is required for each type of hardware vendor and model that needs to be managed with the automata systems
+
+```
+mctl create hardware-vendor --vendor-name supermetal
+mctl create hardware-model --vendor-name supermetal --model-name x99gpu-h
+```
+
+### 3. Create servers
 
 To run set [conditions](https://github.com/metal-automata/architecture/blob/main/firmware-install-service.md#conditions) on a server, they need to be enlisted in the sandbox `Serverservice`.
 
 Note: this assumes the KIND environment on your machine can connect to server BMC IPs.
 
-- Make sure the `FleetDB` and `CrDB` pods are running.
+- Make sure the `FleetDB` and `PG` pods are running.
 - In separate terminals, run `make port-forward-fleetdb`, `make port-forward-conditionorc-api`.
 - Import a server using `mctl` ()
 
@@ -73,6 +76,29 @@ Note: this assumes the KIND environment on your machine can connect to server BM
 msg=condition set
 conditionID=fccf1b78-c073-4897-96bd-8c03bc3bc807
 serverID=ede81024-f62a-4288-8730-3fab8cceabcc
+```
+
+Servers can also be imported in bulk
+```
+./mctl create server --from-file servers.json
+```
+
+```servers.json
+[
+  {
+    "vendor": "supermetal",
+    "model": "x99gpu-h",
+    "facility_code": "sandbox",
+    "bmc": {
+      "hardware_vendor_name": "supermetal",
+      "hardware_model_name": "x99gpu-h",
+      "ipaddress": "192.168.2.102",
+      "username": "ADMIN",
+      "password": "ADMIN",
+      "macaddress": "ca:ca:76:8b:de:ad"
+    }
+  }
+]
 ```
 
 ### 4. Server and component inventory
@@ -208,10 +234,6 @@ A test environment for firmware-syncer can be deployed post installation.
 
 Check out the [setup guide](notes/firmware-syncer.md) for more information.
 
-## Fleet-scheduler
-
-To enable the fleet-scheduler service, follow the steps in the [notes](notes/fleet-scheduler.md).
-
 ## Helm chart dependencies
 
 To ensure the sandbox is self contained, make sure to update the helm chart depdendencies
@@ -224,34 +246,49 @@ helm dependency update
 
 Git add in the new chart tarball, and PR changes.
 ```
-git add charts/prometheus-pushgateway-2.7.1.tgz
+git add charts/postgres-2.7.1.tgz
 ```
 
-### Check out make help for a list of available commands.
+### Run `make help` for a list of available commands.
 
 ```
 ❯ make
 
 Usage:
-  make <target>
+  make <targets>
 
 Targets:
-  install              install helm chart for the sandbox env
-  upgrade              upgrade helm chart for the sandbox environment
-  clean                uninstall helm chart
-  port-forward-conditionorc-api port forward condition orchestrator API  (runs in foreground)
-  port-forward-alloy-pprof port forward condition Alloy pprof endpoint  (runs in foreground)
-  port-forward-hss     port forward hollow server service port (runs in foreground)
-  port-forward-crdb    port forward crdb service port (runs in foreground)
-  port-forward-chaos-dash port forward chaos-mesh dashboard (runs in foreground)
-  port-forward-jaeger-dash port forward jaeger frontend
-  port-forward-minio   port forward to the minio S3 port
-  firmware-syncer-env  install extra services used to test firmware-syncer
-  firmware-syncer-env-clean Remove extra services installed for firmware-syncer testing
-  firmware-syncer-job  create a firmware-syncer job
-  firmware-syncer-job-clean remove the firmware-syncer job
-  psql-crdb            connect to crdb with psql (requires port-forward-crdb)
-  clean-nats           purge nats app and storage pvcs
-  kubectl-ctx-kind     set kube ctx to kind cluster
-  help                 Show help
+  install                          install helm chart for the sandbox env with fleetdb(default)
+  upgrade                          upgrade helm chart for the sandbox environment
+  clean                            uninstall helm chart
+  port-forward-condition-api       port forward conditions API (runs in foreground)
+  port-forward-condition-orc-api   port forward conditions Orchestrator API (runs in foreground)
+  port-forward-agent-pprof         port forward condition Alloy pprof endpoint  (runs in foreground)
+  port-forward-fleetdb             port forward fleetdb port (runs in foreground)
+  port-forward-pg                  port forward pg service port (runs in foreground)
+  port-forward-chaos-dash          port forward chaos-mesh dashboard (runs in foreground)
+  port-forward-jaeger-dash         port forward jaeger frontend
+  port-forward-otel                port forward otel server
+  port-forward-minio               port forward to the minio S3 port
+  port-all-with-lan                port forward all endpoints (runs in the background)
+  port-all                         port forward all endpoints (runs in the background)
+  kill-all-ports                   kill all port fowarding processes that are running in the background
+  firmware-syncer-env              install extra services used to test firmware-syncer
+  firmware-syncer-env-clean        Remove extra services installed for firmware-syncer testing
+  firmware-syncer-job              create a firmware-syncer job
+  firmware-syncer-job-clean        remove the firmware-syncer job
+  psql                             connect to postgres with psql (requires port-forward-pg)
+  bootstrap-nats                   bootstrap just the nats setup - after an updated configurtion
+  clean-nats                       purge nats app and related storage pvcs
+  kubectl-ctx-kind                 set kube ctx to kind cluster
+  %-local                          Change service to local service instead of upstream. DIR is optional, defaults to "../".
+                                   -Example: `make fleetdb-local ../services/fleetdb` will tell sandbox to use ../services/fleetdb instead of the upstream
+                                   -Note: Use `make fleetdb-upstream` to revert this process
+  %-upstream                       Change service to upstream service instead of local.
+                                   -Example: `make fleetdb-upstream` will tell sandbox to use the upstream (https://metal-automata.github.io/fleetdb) fleetdb.
+  %-info                           Get some meta info about a service.
+                                   -Example: `make fleetdb-info`
+  %-log                            Tail logs of a service
+  %-bash                           Enter a pod with bash
+  help                             Show help
 ```
