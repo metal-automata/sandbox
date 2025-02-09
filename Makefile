@@ -3,7 +3,7 @@
 # local-port:service-port
 CONDITION_API_PORT_FW=9001:9001
 CONDITION_ORC_API_PORT_FW=9002:9001
-ALLOY_PORT_FW=9091:9091
+AGENT_PORT_FW=9091:9091
 FLEETDB_PORT_FW=8000:8000
 PG_PORT_FW=5432:5432
 CHAOS_DASH_PORT_FW=2333:2333
@@ -46,8 +46,8 @@ port-forward-condition-orc-api: kubectl-ctx-kind
 
 
 ## port forward condition Alloy pprof endpoint  (runs in foreground)
-port-forward-alloy-pprof: kubectl-ctx-kind
-	kubectl port-forward deployment/alloy ${ALLOY_PORT_FW}
+port-forward-agent-pprof: kubectl-ctx-kind
+	kubectl port-forward deployment/agent ${AGENT_PORT_FW}
 
 ## port forward fleetdb port (runs in foreground)
 port-forward-fleetdb: kubectl-ctx-kind
@@ -77,7 +77,7 @@ port-forward-minio:
 ## port forward all endpoints (runs in the background)
 port-all-with-lan:
 	kubectl port-forward deployment/conditions-api --address 0.0.0.0 ${CONDITION_API_PORT_FW} > /dev/null 2>&1 &
-	kubectl port-forward deployment/alloy --address 0.0.0.0 ${ALLOY_PORT_FW} > /dev/null 2>&1 &
+	kubectl port-forward deployment/agent --address 0.0.0.0 ${AGENT_PORT_FW} > /dev/null 2>&1 &
 	kubectl port-forward service/postgresql --address 0.0.0.0 ${PG_PORT_FW} > /dev/null 2>&1 &
 	kubectl port-forward deployment/fleetdb --address 0.0.0.0 ${FLEETDB_PORT_FW} > /dev/null 2>&1 &
 	kubectl port-forward service/chaos-dashboard --address 0.0.0.0 ${CHAOS_DASH_PORT_FW} > /dev/null 2>&1 &
@@ -86,7 +86,7 @@ port-all-with-lan:
 
 port-all:
 	kubectl port-forward deployment/conditions-api ${CONDITION_API_PORT_FW} > /dev/null 2>&1 &
-	kubectl port-forward deployment/alloy ${ALLOY_PORT_FW} > /dev/null 2>&1 &
+	kubectl port-forward deployment/agent ${AGENT_PORT_FW} > /dev/null 2>&1 &
 	kubectl port-forward service/postgresql ${PG_PORT_FW} > /dev/null 2>&1 &
 	kubectl port-forward deployment/fleetdb ${FLEETDB_PORT_FW} > /dev/null 2>&1 &
 	kubectl port-forward service/chaos-dashboard ${CHAOS_DASH_PORT_FW} > /dev/null 2>&1 &
@@ -96,7 +96,7 @@ port-all:
 ## kill all port fowarding processes that are running in the background
 kill-all-ports:
 	lsof -i:${CONDITION_API_PORT_FW} -t | xargs kill
-	lsof -i:${ALLOY_PORT_FW} -t | xargs kill
+	lsof -i:${AGENT_PORT_FW} -t | xargs kill
 	lsof -i:${FLEETDB_PORT_FW} -t | xargs kill
 	lsof -i:${PG_PORT_FW} -t | xargs kill
 	lsof -i:${CHAOS_DASH_PORT_FW} -t | xargs kill
@@ -139,20 +139,20 @@ kubectl-ctx-kind:
 	kubectl config use-context kind-kind
 
 ## Change service to local service instead of upstream. DIR is optional, defaults to "../".
-## Example: `make fleet-scheduler-local ../services/fleet-scheduler` will tell sandbox to use ../services/fleet-scheduler instead of the upstream
-## Note: Use `make fleet-scheduler-upstream` to revert this process
+## Example: `make fleetdb-local ../services/fleetdb` will tell sandbox to use ../services/fleetdb instead of the upstream
+## Note: Use `make fleetdb-upstream` to revert this process
 %-local:
 	$(eval DIR ?= ../)
 	@./scripts/makefile/set-service-to-local.sh $(subst -local,,$@) ${DIR}
 
 ## Change service to upstream service instead of local.
-## Example: `make fleet-scheduler-upstream` will tell sandbox to use the upstream (https://metal-automata.github.io/fleet-scheduler) fleet-scheduler.
+## Example: `make fleetdb-upstream` will tell sandbox to use the upstream (https://metal-automata.github.io/fleetdb) fleetdb.
 %-upstream:
 	@touch .local-values.yaml
 	@yq -i "del(.localrepos.[] | select(.name == \"$(subst -upstream,,$@)\"))" .local-values.yaml
 
 ## Get some meta info about a service.
-## Example: `make fleet-scheduler-info`
+## Example: `make fleetdb-info`
 %-info:
 	@./scripts/makefile/get-service-info.sh $(subst -info,,$@)
 

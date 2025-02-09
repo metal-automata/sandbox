@@ -68,7 +68,7 @@ conditionorc:
     #       client_id: conditionorc-api
     #       client_scopes: "read:server create:server:attributes update:server:attributes delete:server:attributes"
 
-flasher:
+agent:
   <<: *env_anchor
   <<: *image_anchor
   image: # Temporary until helm chart conversion is done
@@ -82,15 +82,6 @@ flasher:
     #     fleetdb:
     #       client_id: flasher
     #       client_scopes: "read:server read:server:credentials read:server:component read:server:versioned-attributes read:server-component-firmwares read:server-component-firmware-sets"
-
-alloy:
-  <<: *env_anchor
-  <<: *image_anchor
-  image:
-    pullPolicy: Always
-    repository:
-      tag: latest
-      url: localhost:5001
 
 syncer:
   enable_cronjob: false
@@ -119,41 +110,6 @@ syncer:
       url: http://minio:9000
     firmware_manifest:
       url: http://modeldata/modeldata.json
-
-fleet-scheduler:
-  enable: false # when enabled, metal-automata/fleet-scheduler will need to be deployed with `make push-image-devel`
-  <<: *image_anchor
-  <<: *env_anchor
-    # uncomment once oauth service is availble in sandbox
-    # env:
-    #   endpoints:
-    #     fleetdb:
-    #       client_id: fleetscheduler
-    #       client_scopes: "read:server"
-    #   endpoints:
-    #     conditionorc:
-    #       client_id: fleetscheduler
-    #       client_scopes: "read:condition create:condition"
-
-flipflop:
-  enable: false
-  <<: *env_anchor
-  <<: *image_anchor
-  image:
-    pullPolicy: Always
-    repository:
-      tag: latest
-      url: localhost:5001
-
-bioscfg:
-  enable: false
-  <<: *env_anchor
-  <<: *image_anchor
-  image:
-    pullPolicy: Always
-    repository:
-      tag: latest
-      url: localhost:5001
 
 minio:
   fullnameOverride: minio
@@ -207,27 +163,3 @@ dashboard:
 chaosDaemon:
   runtime: containerd
   socketPath: /run/containerd/containerd.sock
-
-# Enable the push gateway to collect metrics from fleetscheduler
-prometheus-pushgateway:
-  enable: false
-  fullnameOverride: fleet-pushgateway
-  resources:
-   limits:
-     cpu: 300m
-     memory: 150Mi
-   requests:
-     cpu: 300m
-     memory: 150Mi
-  service:
-   port: 9090
-
-broker:
-  enable: false
-  <<: *env_anchor
-  <<: *image_anchor
-  image:
-    pullPolicy: Always
-    repository: "localhost:5001/metal-broker"
-    tag: latest
-    pullPolicy: Always
