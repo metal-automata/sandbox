@@ -30,15 +30,9 @@ data:
         name: controllers
         subjects:
           - com.hollow.sh.controllers.commands.>
-          - com.hollow.sh.controllers.responses.>
         acknowledgements: true
         duplicate_window: 5m
         retention: workQueue
-      consumer:
-        pull: true
-        name: conditionorc
-        ack_wait: 5m
-        max_ack_pending: 10
       kv_replication: 1
     notifications:
       enabled: false
