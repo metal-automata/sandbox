@@ -4,6 +4,13 @@
 
 . ./scripts/makefile/functions.sh
 
+diff -q Chart.yaml.tmpl Chart.yaml
+if [ $? -ne 0 ];
+then
+	echo "fix differences in Chart.yaml.tmpl and rerun"
+	exit 1
+fi
+
 cp Chart.yaml.tmpl Chart.yaml
 
 LENGTH=$(yq ".localrepos | length" $TEMPFILE)

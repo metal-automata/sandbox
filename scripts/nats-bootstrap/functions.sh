@@ -21,6 +21,11 @@ function init_natsserver() {
 
 function clean_natsbox() {
 	set -e
+	while ! kubectl get pods | awk '/nats-box/{print $3}' | grep "Running"; do
+		echo "waiting for nats-box to be ready... "
+		sleep 5
+	done
+
 	kubectl exec -ti deployments/nats-box -- rm -rf /root/*.* /nsc
 	set +e
 }
@@ -173,6 +178,8 @@ function push_natsaccounts() {
 		sleep 5
 	done
 
+	echo "wait a few more seconds before we push accounts.. "
+	sleep 10
 	kuexec "nsc push --system-account SYS -u nats://nats:4222 -A"
 }
 
