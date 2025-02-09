@@ -19,7 +19,7 @@ spec:
             - migrate
             - up
           env:
-            - name: FLEETDB_CRDB_URI
+            - name: FLEETDB_PGDB_URI
               value: postgresql://user:hunter2@postgresql:5432/fleetdb?sslmode=disable
           image: {{ .Values.fleetdb.image.repository.url }}/fleetdb:{{ .Values.fleetdb.image.repository.tag }}
           imagePullPolicy: {{ $.Values.fleetdb.image.pullPolicy }}
@@ -33,7 +33,7 @@ spec:
               memory: 200M
       containers:
         - env:
-            - name: FLEETDB_CRDB_URI
+            - name: FLEETDB_PGDB_URI
               value: postgresql://user:hunter2@postgresql:5432/fleetdb?sslmode=disable
           image: {{ .Values.fleetdb.image.repository.url }}/fleetdb:{{ .Values.fleetdb.image.repository.tag }}
           imagePullPolicy: {{ $.Values.fleetdb.image.pullPolicy }}
