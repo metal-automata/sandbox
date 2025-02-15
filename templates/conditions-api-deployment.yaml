@@ -43,12 +43,12 @@ spec:
               value: "{{ .Values.conditionorc.env.endpoints.nats.url }}"
             - name: CONDITIONORC_NATS_CONNECT_TIMEOUT
               value: "{{ .Values.conditionorc.env.endpoints.nats.timeout }}"
-            - name: CONDITIONORC_NATS_CONSUMER_NAME
-              value: "conditionorc"
-            - name: CONDITIONORC_NATS_CONSUMER_SUBSCRIBESUBJECTS
-              value: "com.hollow.sh.controllers.responses.>"
-            - name: CONDITIONORC_NATS_CONSUMER_FILTERSUBJECT
-              value: "com.hollow.sh.controllers.responses.>"
+            #- name: CONDITIONORC_NATS_CONSUMER_NAME
+            #  value: "conditionorc"
+            #- name: CONDITIONORC_NATS_CONSUMER_SUBSCRIBESUBJECTS
+            #  value: "com.hollow.sh.controllers.responses.>"
+            #- name: CONDITIONORC_NATS_CONSUMER_FILTERSUBJECT
+            #  value: "com.hollow.sh.controllers.responses.>"
             - name: CONDITIONORC_NATS_PUBLISHERSUBJECTPREFIX
               value: "com.hollow.sh.controllers.commands"
             - name: CONDITIONORC_SERVERSERVICE_ENDPOINT
