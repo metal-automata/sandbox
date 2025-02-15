@@ -1,0 +1,27 @@
+{{- if eq .Values.smee.enabled true }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    k8s-service: tinkerbell-smee
+  name: smee
+spec:
+  ports:
+    - name: dhcp
+      port: 67
+      protocol: UDP
+      targetPort: dhcp
+    - name: tftp
+      port: 69
+      protocol: UDP
+      targetPort: tftp
+    - name: syslog
+      port: 514
+      protocol: UDP
+      targetPort: syslog
+    - name: http
+      port: 80
+      targetPort: http
+  selector:
+    k8s-service: tinkerbell-smee
+{{- end }}

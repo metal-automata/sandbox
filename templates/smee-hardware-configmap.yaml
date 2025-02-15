@@ -1,0 +1,45 @@
+{{- if eq .Values.smee.enabled true }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smee-hardware-config
+data:
+  hardware.yaml: |
+    ---
+    #BMC interface
+    cc:dd:ee:de:ad:ff:
+      ipAddress: "192.168.2.102"
+      subnetMask: "255.255.255.0"
+      defaultGateway: "192.168.2.1"
+      nameServers:
+        - "192.168.2.1"
+      hostname: "smee-test-client"
+      domainName: ""
+      broadcastAddress: "192.168.2.255"
+      ntpServers:
+        - "132.163.96.2"
+      leaseTime: 86400
+      domainSearch:
+        - "sandbox"
+      netboot:
+        allowPxe: false
+
+    #Data interface
+    cc:dd:ee:da:a7:ac:
+      ipAddress: "192.168.2.200"
+      subnetMask: "255.255.255.0"
+      defaultGateway: "192.168.2.1"
+      nameServers:
+        - "192.168.2.1"
+      hostname: "x11ss-f"
+      domainName: ""
+      broadcastAddress: "192.168.2.255"
+      ntpServers:
+        - "132.163.96.2"
+      leaseTime: 86400
+      domainSearch:
+        - "sandbox"
+      netboot:
+        allowPxe: true
+{{- end }}
