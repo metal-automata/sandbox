@@ -37,10 +37,6 @@ clean: kubectl-ctx-kind
 	rm values-nats.yaml
 	./scripts/wait-clean.sh
 
-## port forward smee
-port-forward-smee:
-	kubectl port-forward deployment/tinkerbell-smee 67:67
-
 ## port forward conditions API (runs in foreground)
 port-forward-condition-api: kubectl-ctx-kind
 	# curl to drop any existing port-forwards
