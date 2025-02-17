@@ -7,15 +7,10 @@ smee:
       otel:
         authenticate: false
         url: jaeger:4317
-  image:
-    pullPolicy: Always
-    repository:
-      tag: latest
-      url: ghcr.io/metal-automata
   # In this setup Smee uses the host network to serve DHCP, TFTP, IPXE
   # Follow the steps in notes/smee-dhcp-ipxe.md to have this setup correctly
   enabled: true
-  public_intferface: eth2
+  public_interface: eth2
   image:
     pullPolicy: Always
     repository:
