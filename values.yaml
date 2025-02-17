@@ -37,6 +37,24 @@ env: &env_anchor
         authenticate: false
         url: http://component-inventory:8020
 
+# Credits to the Tinkerbell project for the Smee DHCP and iPXE service
+# 
+# https://github.com/tinkerbell/charts/blob/20cdc1260fd90710f051e436fe713cf93f7bb130/tinkerbell/stack/values.yaml#L66
+#
+# The DHCP and iPXE service
+smee:
+  <<: *env_anchor
+  <<: *image_anchor
+  # In this setup Smee uses the host network to serve DHCP, TFTP, IPXE
+  # Follow the steps in notes/smee-dhcp-ipxe.md to have this setup correctly
+  enabled: false
+  public_intferface: <>
+  image:
+    pullPolicy: Always
+    repository:
+      tag: latest
+      url: quay.io/tinkerbell
+
 fleetdb:
   enable_oidc: false
   <<: *env_anchor

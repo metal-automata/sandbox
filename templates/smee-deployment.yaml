@@ -1,0 +1,77 @@
+{{- if eq .Values.smee.enabled true }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s-service: tinkerbell-smee
+  name: tinkerbell-smee
+spec:
+  selector:
+    matchLabels:
+      k8s-service: tinkerbell-smee
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        k8s-service: tinkerbell-smee
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      hostPID: true
+      volumes:
+        - name: hardware-config
+          configMap:
+            name: smee-hardware-config
+      containers:
+        - name: tinkerbell-smee
+          image: {{ .Values.smee.image.repository.url }}/smee:{{ .Values.smee.image.repository.tag }}
+          imagePullPolicy: {{ $.Values.smee.image.pullPolicy }}
+          args: ["-log-level", "debug", "-dhcp-addr", "0.0.0.0:67"]
+          env:
+            - name: SMEE_PUBLIC_IP_INTERFACE
+              value: "{{ .Values.smee.public_interface }}"
+            - name: SMEE_EXTRA_KERNEL_ARGS
+              value: "tink_worker_image=quay.io/tinkerbell/tink-worker:latest"
+            - name: SMEE_BACKEND_FILE_ENABLED
+              value: "true"
+            - name: SMEE_BACKEND_FILE_PATH
+              value: "/etc/smee/hardware.yaml"
+            - name: FACILITY_CODE
+              value: "sandbox"
+            - name: HTTP_BIND
+              value: ":80"
+            - name: TINKERBELL_TLS
+              value: "false"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "{{ .Values.smee.env.endpoints.otel.url }}"
+            - name: OTEL_EXPORTER_OTLP_INSECURE
+              value: "{{ not .Values.smee.env.endpoints.otel.authenticate }}"
+          ports:
+            - name: dhcp
+              containerPort: 67
+              protocol: UDP
+            - name: tftp
+              containerPort: 69
+              protocol: UDP
+            - name: syslog
+              containerPort: 514
+              protocol: UDP
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            requests:
+              cpu: 10m
+              memory: 64Mi
+          volumeMounts:
+            - name: hardware-config
+              mountPath: /etc/smee
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["NET_ADMIN", "NET_RAW"]
+{{- end }}

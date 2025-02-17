@@ -1,0 +1,11 @@
+{{- if eq .Values.smee.enabled true }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smee-hardware-config
+data:
+  hardware.yaml: |
+    ---
+    {{ .Values.smee.hardware_yaml | indent 4 }}
+{{- end }}
