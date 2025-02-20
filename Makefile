@@ -33,14 +33,14 @@ upgrade: kubectl-ctx-kind
 ## uninstall helm chart
 clean: kubectl-ctx-kind
 	helm uninstall hollow-sandbox
-	kubectl delete pvc db db-postgres-0 nat-js-pvc-nats-0 nats-jwt-pvc-nats-0
+	kubectl delete pvc db db-postgresql-0 nats-js-pvc-nats-0 nats-jwt-pvc-nats-0
 	rm values-nats.yaml
 	./scripts/wait-clean.sh
 
 ## port forward conditions API (runs in foreground)
 port-forward-condition-api: kubectl-ctx-kind
 	# curl to drop any existing port-forwards
-	curl localhost:9001
+	curl localhost:9001 || true
 	kubectl port-forward deployment/conditions-api ${CONDITION_API_PORT_FW}
 
 ## port forward conditions Orchestrator API (runs in foreground)
@@ -55,7 +55,7 @@ port-forward-agent-pprof: kubectl-ctx-kind
 ## port forward fleetdb port (runs in foreground)
 port-forward-fleetdb: kubectl-ctx-kind
 	# curl to drop any existing port-forwards
-	curl localhost:8000
+	curl localhost:8000 || true
 	kubectl port-forward deployment/fleetdb ${FLEETDB_PORT_FW}
 
 ## port forward pg service port (runs in foreground)

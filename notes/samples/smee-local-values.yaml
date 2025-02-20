@@ -1,0 +1,53 @@
+smee:
+  env:
+    namespace: default
+    facility: sandbox
+    log_level: debug
+    endpoints:
+      otel:
+        authenticate: false
+        url: jaeger:4317
+  # In this setup Smee uses the host network to serve DHCP, TFTP, IPXE
+  # Follow the steps in notes/smee-dhcp-ipxe.md to have this setup correctly
+  enabled: true
+  public_interface: eth2
+  image:
+    pullPolicy: Always
+    repository:
+      tag: latest
+      url: quay.io/tinkerbell
+  hardware_yaml: |
+    #BMC interface
+    cc:dd:ee:de:ad:ff:
+      ipAddress: "192.168.2.102"
+      subnetMask: "255.255.255.0"
+      defaultGateway: "192.168.2.1"
+      nameServers:
+        - "192.168.2.1"
+      hostname: "smee-test-client"
+      domainName: ""
+      broadcastAddress: "192.168.2.255"
+      ntpServers:
+        - "132.163.96.2"
+      leaseTime: 86400
+      domainSearch:
+        - "sandbox"
+      netboot:
+        allowPxe: false
+    #Data interface
+    cc:dd:ee:da:a7:ac:
+      ipAddress: "192.168.2.200"
+      subnetMask: "255.255.255.0"
+      defaultGateway: "192.168.2.1"
+      nameServers:
+        - "192.168.2.1"
+      hostname: "x11ss-f"
+      domainName: ""
+      broadcastAddress: "192.168.2.255"
+      ntpServers:
+        - "132.163.96.2"
+      leaseTime: 86400
+      domainSearch:
+        - "sandbox"
+      netboot:
+        allowPxe: true

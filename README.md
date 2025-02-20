@@ -200,6 +200,14 @@ To uninstall the helm chart
 make clean
 ```
 
+## DHCP, iPXE, tftp services
+
+The sandbox includes k8s templates to run [Tinkerbell Smee](https://github.com/tinkerbell/smee/) as a DHCP, iPXE and TFTP service
+to boot servers into an image or OS. 
+
+By default this is disabled in values.yaml, checkout the [DHCP setup notes](notes/smee-dhcp-ipxe.md) to have this running.
+
+
 ## NATs Jetstream setup
 
 The chart configures a NATS Jetstream that Orchestrator and the controllers sends messages on, the NATS Jetstream configuration is specified in [values.yaml](values.yaml).
